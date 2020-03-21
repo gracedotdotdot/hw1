@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[27]:
+# In[22]:
 
 
 # Part. 1
@@ -12,17 +12,18 @@ import pandas as pd
 # Part. 2
 # Read cwb weather data
 
-cwb_filename = '106000122.csv'
+cwb_filename = 'sample_input.csv'
 data = []
 output = []
 header = []
+indexName = []
 
 with open(cwb_filename) as csvfile:
-   mycsv = csv.DictReader(csvfile)
-   header = mycsv.fieldnames
+    mycsv = csv.DictReader(csvfile)
+    header = mycsv.fieldnames
 
-   for row in mycsv:
-      data.append(row)
+    for row in mycsv:
+        data.append(row)
 #=======================================
 # Part. 3
 # Analyze data depend on your group and store it to target_data like:
@@ -31,19 +32,32 @@ with open(cwb_filename) as csvfile:
 
 idName = ['C0A880', 'C0F9A0', 'C0G640', 'C0R190', 'C0X260']
 for mID in idName:
-    df =pd.DataFrame(list(filter(lambda item: item['station_id'] == mID, data)))
-    display(df.head())
+    df =list(filter(lambda item: item['station_id'] == mID, data))
+    #display(df.head())
+
+    print(df)
+    for item in df:
+        print('\n')
+        if item['WDSD']=='-99.000' or item['WDSD']== '-999.000':
+            item['WDSD']= '0'
+    for item in df:
+        if df.index(item)==0:
+            mintmp = item['WDSD']
+            maxtmp = item['WDSD']
+        elif item['WDSD']<mintmp:
+            mintmp = item['WDSD']
+        elif item['WDSD']>maxtmp:
+            maxtmp = item['WDSD']
     
-    indexNames = df[df['WDSD']==-99.000].index
-    df.drop(indexNames, inplace= True)
-    indexNames = df[df['WDSD']==-999.000].index
-    df.drop(indexNames, inplace= True)
+    mRange = float(maxtmp) - float(mintmp)
+    output.append([mID, mRange])
 
-    mMin = float(df['WDSD'].min())
-    mMax = float(df['WDSD'].max())
-    mRange = mMax - mMin
-    output.append([mID,mRange])
-
+    
+#     for i in range(0, 13):
+#         if(df[i][4]==-99.000):
+#             indexName.append(i)
+#             df[i][4]=0       
+    
 print(output)
 
 
